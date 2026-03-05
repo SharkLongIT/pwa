@@ -19,10 +19,12 @@ const DatePickerField = ({
     onChange,
     minDate,
     maxDate,
+    mode: initialMode = "date",
+    error,
 }: any) => {
     const [visible, setVisible] = useState(false);
     const [tempDate, setTempDate] = useState<Date>(value || new Date());
-    const [mode, setMode] = useState<PickerMode>("date");
+    const [mode, setMode] = useState<PickerMode>(initialMode);
     const { t } = useTranslation();
     const onConfirm = () => {
         onChange(tempDate);
@@ -38,7 +40,7 @@ const DatePickerField = ({
             {/* INPUT */}
             <TouchableOpacity
                 onPress={() => setVisible(true)}
-                style={styles.input}
+                style={[styles.input, error && styles.inputError]}
             >
                 <Text style={{ color: value ? "#000" : "#9CA3AF" }}>
                     {value
@@ -46,7 +48,7 @@ const DatePickerField = ({
                         : label}
                 </Text>
             </TouchableOpacity>
-
+            {error && <Text style={styles.errorText}>{error}</Text>}
             {/* MODAL */}
             <Modal
                 visible={visible}
@@ -67,14 +69,6 @@ const DatePickerField = ({
                         </TouchableOpacity>
 
                         {/* SELECT MODE */}
-                        <TouchableOpacity
-                            style={styles.modeBtn}
-                            onPress={toggleMode}
-                        >
-                            <Text style={styles.modeText}>
-                                {mode === "date" ? "Date" : "Time"} ▾
-                            </Text>
-                        </TouchableOpacity>
 
                         <TouchableOpacity onPress={onConfirm}>
                             <Text style={styles.confirm}>{t("common.done")}</Text>
@@ -110,6 +104,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         backgroundColor: "#fff",
+
     },
 
     overlay: {
@@ -156,5 +151,13 @@ const styles = StyleSheet.create({
         color: "#2563EB",
         fontSize: 16,
         fontWeight: "600",
+    },
+    errorText: {
+        marginTop: 4,
+        fontSize: 12,
+        color: '#EF4444',
+    },
+    inputError: {
+        borderColor: '#EF4444',
     },
 });

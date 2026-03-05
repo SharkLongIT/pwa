@@ -1,15 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
-    Animated,
     Dimensions,
+    Pressable,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-
 
 import {
     HomeIcon,
@@ -21,84 +19,75 @@ import {
     MenuIconActive,
     MenuIcon,
 } from '~/assets/icons';
-import { appColors } from '~/utils/constants/appColors';
+
 import FilterScreen from '~/screens/filter/FilterScreen';
-import { useTranslation } from 'react-i18next';
-import { useAppColors } from '~/hooks/useAppColors';
 import HomeScreen from '~/screens/home/HomeScreen';
 import NotificationScreen from '~/screens/notification/NotificationScreen';
 import MenuScreen from '~/screens/menu/MenuScreen';
+
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '~/hooks/useNotifications';
+import CreateUpdateProjectModal from '~/screens/home/modal/CreateUpdateProjectModal';
+import { appEvent } from '~/utils/appEvent';
+import { EVENT } from '~/utils/enum';
+import { showToast } from '~/utils/toast';
+import { t } from 'i18next';
 
 /* -------------------- Types -------------------- */
 export type BottomTabParamList = {
     Home: undefined;
+    Filter: undefined;
+    Center: undefined;
     Notifications: undefined;
     Menu: undefined;
-    Profile: undefined;
-    Filter: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-/* -------------------- Layout const -------------------- */
+/* -------------------- Layout -------------------- */
 const { width } = Dimensions.get('window');
-const TAB_COUNT = 4;
+const TAB_COUNT = 5;
 const TAB_BAR_MARGIN = 24;
 const TAB_BAR_WIDTH = width - TAB_BAR_MARGIN * 2;
 const TAB_WIDTH = TAB_BAR_WIDTH / TAB_COUNT;
 
-/* -------------------- Tab Item -------------------- */
-const TabItem = ({ focused, icon, label }: any) => {
-    const scale = useRef(new Animated.Value(1)).current;
-
-    // useEffect(() => {
-    //     Animated.spring(scale, {
-    //         toValue: focused ? 1.1 : 1,
-    //         useNativeDriver: true,
-    //     }).start();
-    // }, [focused]);
-
-    return (
-        <Animated.View
-            style={{
-                alignItems: 'center',
-                transform: [{ scale }],
-            }}
-        >
-            {icon}
-            <Text style={[styles.label, focused && styles.labelActive]}>
-                {label}
-            </Text>
-        </Animated.View>
-    );
-};
-
 /* -------------------- Custom TabBar -------------------- */
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
-    const translateX = useRef(new Animated.Value(0)).current;
-    const colors = useAppColors();
-    useEffect(() => {
-        Animated.spring(translateX, {
-            toValue: state.index * TAB_WIDTH,
-            useNativeDriver: true,
-        }).start();
-    }, [state.index]);
+    const [modalVisible, setModalVisible] = React.useState(false);
 
     return (
         <View style={styles.wrapper}>
-            <View style={[styles.tabBar, { backgroundColor: colors.card }]}>
-                {/* Indicator */}
-                <Animated.View
-                    style={[
-                        styles.indicator,
-                        { transform: [{ translateX }] },
-                    ]}
-                />
-
+            <CreateUpdateProjectModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSubmit={() => {
+                    setModalVisible(false);
+                    appEvent.emit(EVENT.PROJECT_CREATED);
+                    showToast?.('success', t('project.createSuccess'), '', 'top');
+                }}
+            />
+            <View style={styles.tabBar}>
                 {state.routes.map((route: any, index: number) => {
                     const { options } = descriptors[route.key];
                     const focused = state.index === index;
+
+                    if (route.name === 'Center') {
+                        return (
+                            <TouchableOpacity
+                                key={route.key}
+                                activeOpacity={0.9}
+                                style={styles.centerWrapper}
+                                onPress={() => setModalVisible(true)}
+
+                            >
+                                <View style={styles.centerOuter}>
+                                    <View style={styles.centerInner}>
+                                        {options.tabBarIcon({ focused: true })}
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }
 
                     return (
                         <TouchableOpacity
@@ -107,11 +96,10 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                             activeOpacity={0.8}
                             onPress={() => navigation.navigate(route.name)}
                         >
-                            <TabItem
-                                focused={focused}
-                                icon={options.tabBarIcon({ focused })}
-                                label={options.tabBarLabel}
-                            />
+                            {options.tabBarIcon({ focused })}
+                            <Text style={[styles.label, focused && styles.labelActive]}>
+                                {options.tabBarLabel}
+                            </Text>
                         </TouchableOpacity>
                     );
                 })}
@@ -129,66 +117,77 @@ export default function BottomTabNavigator() {
             tabBar={(props) => <CustomTabBar {...props} />}
             screenOptions={{ headerShown: false }}
         >
+            {/* HOME */}
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    // tabBarLabel: TAB_LABEL.HOME,
                     tabBarLabel: t('tab.home'),
                     tabBarIcon: ({ focused }) =>
                         focused ? <HomeIconActive /> : <HomeIcon />,
                 }}
             />
 
+            {/* FILTER */}
             <Tab.Screen
                 name="Filter"
                 component={FilterScreen}
                 options={{
-                    // tabBarLabel: TAB_LABEL.SEARCH,
                     tabBarLabel: t('tab.search'),
                     tabBarIcon: ({ focused }) =>
                         focused ? <SearchIconActive /> : <SearchIcon />,
                 }}
             />
 
-            {/* <Tab.Screen
-                name="Notifications"
-                component={NotificationScreen}
+            {/* CENTER */}
+            <Tab.Screen
+                name="Center"
+                component={View} // Placeholder component since this tab opens a modal
+                // listeners={{
+                //     tabPress: (e) => {
+                //         e.preventDefault();
+                //         setModalVisible(true);
+                //     },
+                // }}
                 options={{
-                    // tabBarLabel: TAB_LABEL.NOTIFICATION,
-                    tabBarLabel: t('tab.notification'),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? <NotiIconActive /> : <NotiIcon />,
+                    tabBarLabel: '',
+                    tabBarIcon: () => (
+                        <Text style={styles.centerButtonText}>+</Text>
+                    ),
                 }}
-            /> */}
+            />
+
+            {/* NOTIFICATIONS */}
             <Tab.Screen
                 name="Notifications"
                 component={NotificationScreen}
                 options={{
                     tabBarLabel: t('tab.notification'),
-                    tabBarIcon: ({ focused }) => {
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ width: 28, height: 28 }}>
+                            {focused ? (
+                                <NotiIconActive />
+                            ) : (
+                                <NotiIcon style={{ width: 28, height: 28, marginLeft: 4 }} />
+                            )}
 
-                        return (
-                            <View style={{ width: 28, height: 28 }}>
-                                {focused ? <NotiIconActive /> : <NotiIcon style={{ width: 28, height: 28, marginLeft: 4 }} />}
-
-                                {items.length > 0 && (
-                                    <View style={styles.badge}>
-                                        <Text style={styles.badgeText}>
-                                            {items.length > 99 ? '99+' : items.length}
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-                        );
-                    },
+                            {items.length > 0 && (
+                                <View style={styles.badge}>
+                                    <Text style={styles.badgeText}>
+                                        {items.length > 99 ? '99+' : items.length}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    ),
                 }}
             />
+
+            {/* MENU */}
             <Tab.Screen
                 name="Menu"
                 component={MenuScreen}
                 options={{
-                    // tabBarLabel: TAB_LABEL.MENU,
                     tabBarLabel: t('tab.menu'),
                     tabBarIcon: ({ focused }) =>
                         focused ? <MenuIconActive /> : <MenuIcon />,
@@ -202,31 +201,33 @@ export default function BottomTabNavigator() {
 const styles = StyleSheet.create({
     wrapper: {
         position: 'absolute',
+        bottom: 20,
         left: 0,
         right: 0,
-        bottom: 16,
         alignItems: 'center',
+        backgroundColor: 'transparent',
     },
 
     tabBar: {
-        width: TAB_BAR_WIDTH,
-        // height: 72,
-        height: 64,
+        height: 72,
         flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderRadius: 36,
-        elevation: 12,
+        backgroundColor: '#ffffff',
+        borderRadius: 40,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+
         shadowColor: '#000',
         shadowOpacity: 0.08,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 12,
-        overflow: 'hidden',
+        elevation: 8,
     },
 
     tabItem: {
         width: TAB_WIDTH,
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
     },
 
     label: {
@@ -236,19 +237,58 @@ const styles = StyleSheet.create({
     },
 
     labelActive: {
-        color: appColors.hight_light,
+        color: '#4F46E5',
         fontWeight: '600',
     },
 
-    indicator: {
-        position: 'absolute',
-        bottom: 0,
+    // CENTER BUTTON
+    centerWrapper: {
         width: TAB_WIDTH,
-        height: 4,
-        backgroundColor: appColors.hight_light,
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
+
+    centerOuter: {
+        position: 'absolute',
+        top: -55,
+        width: 76,
+        height: 76,
+        borderRadius: 38,
+        backgroundColor: '#E0E7FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: '#fff',
+        borderWidth: 4,
+
+        shadowColor: '#E0E7FF',
+        shadowOpacity: 0.4,
+        shadowOffset: { width: 0, height: 8 },
+        shadowRadius: 16,
+        elevation: 10,
+    },
+
+    centerInner: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: '#4F46E5',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        shadowColor: '#4F46E5',
+        shadowOpacity: 0.4,
+        shadowOffset: { width: 0, height: 8 },
+        shadowRadius: 16,
+        elevation: 10,
+    },
+    centerButtonText: {
+        color: '#fff',
+        fontSize: 28,
+        fontWeight: '500',
+        textAlign: 'center',
+        lineHeight: 28,
+    },
+
     badge: {
         position: 'absolute',
         top: -4,

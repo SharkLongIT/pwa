@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 const getNotiColor = (title: string, colors: any) => {
     switch (title) {
         case "ConfirmSuccess":
@@ -21,3 +23,5 @@ const getNotiColor = (title: string, colors: any) => {
     }
 };
 export default getNotiColor;
+
+

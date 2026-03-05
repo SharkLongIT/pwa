@@ -1,3 +1,5 @@
+import { all } from "axios";
+
 export default {
     welcome_back: "Welcome back",
     common: {
@@ -14,6 +16,13 @@ export default {
         keyword: "Keyword",
         enterKeyword: "Enter keyword...",
         back: "Back",
+        delete: "Delete",
+        createSuccess: "Created successfully",
+        updateSuccess: "Updated successfully",
+        deleteSuccess: "Deleted successfully",
+        confirmDeleteTitle: "Confirm Deletion",
+        confirmDeleteMessage: "Are you sure you want to delete this item?",
+        action: "Action"
     },
 
     notification: {
@@ -248,6 +257,64 @@ If you have any questions or concerns regarding this Privacy Policy, please cont
         morning: "Good morning",
         afternoon: "Good afternoon",
         evening: "Good evening"
+    },
+    project: {
+        create: "Create Project",
+        edit: "Edit Project",
+        name: "Project Name",
+        namePlaceholder: "Enter project name",
+        type: "Project Type",
+        typePlaceholder: "Select project type",
+        cost: "Cost",
+        costPlaceholder: "Enter project cost",
+        slotPayment: "Slot Payment",
+        slotPaymentPlaceholder: "Enter slot payment",
+        dateStart: "Start Date",
+        dateEnd: "End Date",
+        costPlan: "Cost Plan",
+        costRate: "Cost Rate (%)",
+        profitPlan: "Profit Plan",
+        profitRate: "Profit Rate (%)",
+
+        marginRate: "Margin Rate (%)",
+        feedbackRate: "Feedback Rate (%)",
+        selectProjectType: "Select project type",
+        status: "Status",
+        statusOptions: {
+            all: "All",
+            draft: "Draft",
+            active: "Active",
+            completed: "Completed",
+            unknown: "Unknown",
+        },
+        createSuccess: "Project created successfully",
+        createFailed: "Failed to create project. Please try again.",
+
+        nameError: "Please enter project name",
+        dateStartError: "Please select start date",
+        dateEndError: "Please select end date",
+        costError: "Please enter project cost",
+        slotPaymentError: "Please enter slot payment",
+        typeError: "Please select project type",
+        detail: 'Project Detail',
+
+        generalInfo: "General Information",
+        finance: "Financial Information",
+        timeProgress: "Time Progress",
+        costProgress: "Cost Progress",
+        timeline: "Timeline",
+        code: "Project Code",
+        paymentSchedule: "Payment Schedule",
+        overview: "Overview",
+        noProject: 'No project',
+        filter: 'Enter keyword...'
+    },
+    payment: {
+        paid: "Paid",
+        unpaid: "Unpaid",
+        paymentDate: "Payment Date",
+        amount: "Amount",
+        note: "Note"
     }
 
 

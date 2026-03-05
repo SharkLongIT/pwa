@@ -175,12 +175,12 @@ const ActiveSessionsScreen = () => {
                         lastActive: t('security.justNow'),
                         current: true,
                     },
-                    {
-                        id: '2',
-                        device: 'MacBook Pro',
-                        location: 'Hà Nội, Việt Nam',
-                        lastActive: '5 phút trước',
-                    },
+                    // {
+                    //     id: '2',
+                    //     device: 'MacBook Pro',
+                    //     location: 'Hà Nội, Việt Nam',
+                    //     lastActive: '5 phút trước',
+                    // },
                 ]);
             } catch (error) {
                 console.log(error);

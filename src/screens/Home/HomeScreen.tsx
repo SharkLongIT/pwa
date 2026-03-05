@@ -1,182 +1,471 @@
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     View,
     StyleSheet,
-    ScrollView,
+    Text,
     Pressable,
     Image,
-    Text,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import PagerView from 'react-native-pager-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
-import BannerCarousel from '~/components/carousel-banner/BannerCarousel';
-import TabContent from '~/components/tab-view/TabContent';
-import Weather from '~/components/weather/Weather';
-import { useAppColors } from '~/hooks/useAppColors';
-import { DrawerParamList } from '~/navigation/MainNavigator';
-import { RootState } from '~/redux/store';
-import { showToast } from '~/utils/toast';
+    FlatList,
+    TextInput,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import projectFe from "~/api/projectType.api";
+import Weather from "~/components/weather/Weather";
+import { useAppColors } from "~/hooks/useAppColors";
+import { MainParamList } from "~/navigation/MainNavigator";
+import { RootState } from "~/redux/store";
+import { appEvent } from "~/utils/appEvent";
+import { EVENT, PAGINATION, STATUS_OPTIONS } from "~/utils/enum";
+import { formatCurrency, formatDate } from "~/utils/format/formatCurrency";
+import { getStatusColor, getStatusText } from "~/utils/helper/status";
+import { PieChart } from "react-native-chart-kit";
 
 const HomeScreen = () => {
-    const lastScrollY = React.useRef(0);
+    const navigation =
+        useNavigation<NativeStackNavigationProp<MainParamList>>();
 
-    const navigation = useNavigation();
     const { t } = useTranslation();
     const auth = useSelector((state: RootState) => state.auth.user);
     const colors = useAppColors();
-    const handleScroll = (e: any) => {
-        const currentY = e.nativeEvent.contentOffset.y;
-        const diff = currentY - lastScrollY.current;
 
-        // luôn show tab khi ở gần top
-        if (currentY < 20) {
-            navigation.getParent()?.setOptions({
-                tabBarStyle: {
-                    transform: [{ translateY: 0 }],
-                },
+    const [projects, setProjects] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const [selectedStatus, setSelectedStatus] = useState<number | undefined>();
+    const [keyword, setKeyword] = useState("");
+
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+
+    /* ================= FETCH ================= */
+
+    const fetchProjects = async (
+        pageNumber = 1,
+        isLoadMore = false,
+        isRefresh = false
+    ) => {
+        try {
+            if (isLoadMore) setLoadingMore(true);
+            else if (isRefresh) setRefreshing(true);
+            else setLoading(true);
+
+            const res = await projectFe.getAllProjectsByUserId({
+                status: selectedStatus,
+                keyword: keyword,
+                skipCount: (pageNumber - 1) * PAGINATION.pageSize,
+                maxResultCount: PAGINATION.pageSize,
             });
-            lastScrollY.current = currentY;
-            return;
-        }
 
-        // kéo xuống → ẩn
-        if (diff > 10) {
-            navigation.getParent()?.setOptions({
-                tabBarStyle: {
-                    transform: [{ translateY: 100 }],
-                },
-            });
-        }
+            const items = res?.data?.result?.items ?? [];
+            const total = res?.data?.result?.totalCount ?? 0;
 
-        // kéo lên → hiện
-        if (diff < -10) {
-            navigation.getParent()?.setOptions({
-                tabBarStyle: {
-                    transform: [{ translateY: 0 }],
-                },
-            });
-        }
+            setHasMore(pageNumber * PAGINATION.pageSize < total);
+            setPage(pageNumber);
 
-        lastScrollY.current = currentY;
+            if (isLoadMore) {
+                setProjects(prev => [...prev, ...items]);
+            } else {
+                setProjects(items);
+            }
+
+        } catch (err) {
+            console.log("Pagination error:", err);
+        } finally {
+            setLoading(false);
+            setLoadingMore(false);
+            setRefreshing(false);
+        }
     };
 
+    /* ================= INITIAL ================= */
+
+    useEffect(() => {
+        fetchProjects();
+    }, []);
+
+    /* ================= FILTER / SEARCH ================= */
+
+    useEffect(() => {
+        fetchProjects(1);
+    }, [selectedStatus]);
+
+    const handleSearch = (text: string) => {
+        setKeyword(text);
+        fetchProjects(1);
+    };
+
+    /* ================= REFRESH ================= */
+
+    const handleRefresh = () => {
+        fetchProjects(1, false, true);
+    };
+
+    /* ================= LOAD MORE ================= */
+
+    const handleLoadMore = () => {
+        if (!hasMore || loadingMore) return;
+        fetchProjects(page + 1, true);
+    };
+
+    /* ================= EVENT REFRESH ================= */
+
+    useEffect(() => {
+        const listener = () => fetchProjects(1);
+        appEvent.addListener(EVENT.PROJECT_CREATED, listener);
+
+        return () => {
+            appEvent.removeListener(EVENT.PROJECT_CREATED, listener);
+        };
+    }, [selectedStatus, keyword]);
+
+    /* ================= SUMMARY ================= */
+
+    const totalCost = useMemo(
+        () => projects.reduce((sum, p) => sum + (p.cost ?? 0), 0),
+        [projects]
+    );
+
+    const totalProfit = useMemo(
+        () => projects.reduce((sum, p) => sum + (p.profitPlan ?? 0), 0),
+        [projects]
+    );
+
+
+
+    /* ================= PROJECT CARD ================= */
+
+
+    const ProjectCard = ({ item }: { item: any }) => {
+        return (
+            <Pressable
+                style={[styles.card, { backgroundColor: colors.card }]}
+                onPress={() =>
+                    navigation.navigate(
+                        "ProjectDetail",
+                        { projectId: item.id } as never
+                    )
+                }
+            >
+                <View style={styles.cardHeader}>
+                    <Text style={styles.projectCode}>
+                        {item.projectCode}
+                    </Text>
+
+                    <View
+                        style={[
+                            styles.statusBadge,
+                            {
+                                backgroundColor:
+                                    getStatusColor(item.status) + "20",
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={{
+                                color: getStatusColor(item.status),
+                                fontWeight: "600",
+                            }}
+                        >
+                            {getStatusText(item.status)}
+                        </Text>
+                    </View>
+                </View>
+
+                <Text style={styles.text}>
+                    {t("project.type")}: {item.projectTypeCode}
+                </Text>
+
+                <Text style={styles.text}>
+                    {formatDate(item.startDate)} -{" "}
+                    {formatDate(item.endDate)}
+                </Text>
+
+                <View style={styles.divider} />
+
+                <Text style={styles.cost}>
+                    {t("project.cost")}:{" "}
+                    {formatCurrency(item.cost)}
+                </Text>
+
+                <Text style={styles.costPlan}>
+                    {t("project.costPlan")}:{" "}
+                    {formatCurrency(item.costPlan)}
+                </Text>
+
+                <Text style={styles.profit}>
+                    {t("project.profitPlan")}:{" "}
+                    {formatCurrency(item.profitPlan)}
+                </Text>
+            </Pressable>
+        );
+    };
+
+    /* ================= SKELETON ================= */
+
+    const SkeletonCard = () => (
+        <View style={[styles.card, { backgroundColor: "#e5e7eb" }]} />
+    );
+
+    /* ================= RENDER ================= */
+    const donutData = [
+        {
+            // name: {t('project.cost')},
+            name: t('project.cost'),
+            value: totalCost,
+            color: "#ef4444",
+            legendFontColor: "#374151",
+            legendFontSize: 12,
+        },
+        {
+            // name: "Lợi nhuận",
+            name: t('project.profitPlan'),
+            value: totalProfit,
+            color: "#16a34a",
+            legendFontColor: "#374151",
+            legendFontSize: 12,
+        },
+    ];
+
     return (
-
-        <View style={{ flex: 1, backgroundColor: colors.background, }}>
-            {/* ===== HEADER ===== */}
-            <SafeAreaView edges={['top']} style={styles.safeHeader}>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <SafeAreaView edges={["top"]}>
                 <Weather />
-
             </SafeAreaView>
 
-            {/* ===== BODY ===== */}
-            <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+                <FlatList
+                    data={projects}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <ProjectCard item={item} />
+                    )}
+                    onRefresh={handleRefresh}
+                    refreshing={refreshing}
+                    onEndReached={handleLoadMore}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={
+                        loadingMore ? (
+                            <Text style={{ textAlign: "center" }}>
+                                {/* Loading more... */}
+                                {t("loading_more")}
+                            </Text>
+                        ) : null
+                    }
+                    ListEmptyComponent={
+                        loading ? (
+                            <>
+                                <SkeletonCard />
+                                <SkeletonCard />
+                            </>
+                        ) : (
+                            <Text style={{ textAlign: "center" }}>
+                                {/* Không có dự án */}
+                                {t("project.noProject")}
+                            </Text>
+                        )
+                    }
+                    ListHeaderComponent={
+                        <>
+                            {/* HEADER */}
+                            <View style={styles.header}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.welcome}>
+                                        {t("welcome_back")}
+                                    </Text>
+                                    <Text style={styles.userName}>
+                                        {auth?.name ?? "User"} 👋
+                                    </Text>
+                                </View>
 
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
+                                <Image
+                                    source={require("~/assets/images/default-avatar.png")}
+                                    style={styles.avatar}
+                                />
+                            </View>
+
+                            {/* SEARCH */}
+                            <View
+                                style={[
+                                    styles.searchBox,
+                                    { backgroundColor: colors.card },
+                                ]}
+                            >
+                                <TextInput
+                                    placeholder={t('project.filter')}
+                                    value={keyword}
+                                    onChangeText={handleSearch}
+                                />
+                            </View>
+
+                            {/* FILTER */}
+                            <View style={styles.filterRow}>
+                                {STATUS_OPTIONS.map((item) => (
+                                    <Pressable
+                                        key={item.labelKey}
+                                        style={[
+                                            styles.filterChip,
+                                            selectedStatus ===
+                                            item.value &&
+                                            styles.filterActive,
+                                        ]}
+                                        onPress={() =>
+                                            setSelectedStatus(item.value)
+                                        }
+                                    >
+                                        <Text
+                                            style={{
+                                                color:
+                                                    selectedStatus ===
+                                                        item.value
+                                                        ? "#fff"
+                                                        : "#6b7280",
+                                            }}
+                                        >
+                                            {t(item.labelKey)}
+                                        </Text>
+                                    </Pressable>
+                                ))}
+                            </View>
+
+                            {/* SUMMARY */}
+                            <View
+                                style={[
+                                    styles.summaryCard,
+                                    { backgroundColor: colors.card },
+                                ]}
+                            >
+                                <Text style={styles.sectionTitle}>
+                                    {t('project.overview')}
+                                </Text>
+
+                                <View style={{ height: 160 }}>
+                                    <PieChart
+                                        data={donutData}
+                                        width={300}
+                                        height={160}
+                                        chartConfig={{
+                                            color: (opacity = 1) =>
+                                                `rgba(0, 0, 0, ${opacity})`,
+                                        }}
+                                        accessor="value"
+                                        backgroundColor="transparent"
+                                        paddingLeft="15"
+                                        // absolute
+                                        absolute={false}
+                                    />
+                                </View>
+
+                                {/* <Text>
+                                    Tổng chi phí:{" "}
+                                    {formatCurrency(totalCost)}
+                                </Text>
+                                <Text>
+                                    Tổng lợi nhuận:{" "}
+                                    {formatCurrency(totalProfit)}
+                                </Text> */}
+                            </View>
+                        </>
+                    }
                     contentContainerStyle={{
-                        paddingBottom: 60,
+                        padding: 20,
+                        paddingBottom: 80,
                     }}
-                >
-                    {/* HEADER */}
-                    <View style={styles.header}>
-                        <View style={{ flex: 1 }}>
-                            <Text style={styles.welcome}>{t("welcome_back")}</Text>
-                            <Text style={[styles.userName, { color: colors.textPrimary }]}>
-                                {auth?.name ?? "User"} 👋
-                            </Text>
-                        </View>
-                        <Pressable onPress={() => navigation.navigate("Profile" as never)}>
-                            <Image
-                                source={require("~/assets/images/default-avatar.png")}
-                                style={styles.avatar}
-                            />
-                        </Pressable>
-
-                    </View>
-                    {/* CONTENT */}
-                    <BannerCarousel />
-                    <View style={{ padding: 20 }}>
-                        <Text style={{ color: colors.textPrimary }}>Home Screen Content</Text>
-
-                        <Pressable onPress={() => showToast("error", "This is a toast message!", "Error details", "bottom")}>
-                            <Text style={{ color: colors.primary, marginTop: 20 }}>
-                                Toast Example error Bottom
-                            </Text>
-                        </Pressable>
-                        <Pressable onPress={() => showToast("info", "This is an info toast message!", "Info details", "top")}>
-                            <Text style={{ color: colors.primary, marginTop: 20 }}>
-                                Toast Example info Top
-                            </Text>
-                        </Pressable>
-                        <Pressable onPress={() => showToast("success", "This is a success toast message!", "Success details", "bottom")}>
-                            <Text style={{ color: colors.primary, marginTop: 20 }}>
-                                Toast Example success Bottom
-                            </Text>
-                        </Pressable>
-
-                    </View>
-
-
-                    {/* <TabContent /> */}
-                </ScrollView>
-
+                />
             </SafeAreaView>
         </View>
     );
 };
 
 export default HomeScreen;
+
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
-    headerGradient: {
-        paddingBottom: 20,
-    },
-
-    safeHeader: {
-        paddingHorizontal: 20,
-        // backgroundColor: 'red',
-
-    },
-
-    container: {
-        paddingTop: 10,
-    },
-    /* HEADER */
     header: {
         flexDirection: "row",
         alignItems: "center",
-        borderRadius: 20,
-        paddingVertical: 12,
-        padding: 20,
-
+        marginBottom: 20,
     },
-
     welcome: {
         fontSize: 13,
         color: "#64748B",
     },
-
     userName: {
         fontSize: 22,
         fontWeight: "700",
-        marginTop: 4,
-        color: "#0F172A",
     },
-
     avatar: {
         width: 48,
         height: 48,
         borderRadius: 24,
-        marginLeft: 12,
     },
-    image: {
-        width: "100%",
-        height: "100%",
+    card: {
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
+        minHeight: 120,
+    },
+    cardHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    projectCode: {
+        fontSize: 16,
+        fontWeight: "700",
+    },
+    statusBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 20,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: "#E2E8F0",
+        marginVertical: 10,
+    },
+    cost: { fontWeight: "600" },
+    profit: { color: "#16a34a" },
+    text: { color: "#64748B" },
+    summaryCard: {
+        padding: 18,
+        borderRadius: 18,
+        marginBottom: 20,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: "700",
+        marginBottom: 10,
+    },
+    filterRow: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        marginBottom: 15,
+    },
+    filterChip: {
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: "#f3f4f6",
+        marginRight: 10,
+        marginBottom: 8,
+    },
+    filterActive: {
+        backgroundColor: "#4F46E5",
+    },
+    searchBox: {
+        marginBottom: 15,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 14,
     },
 
+    costPlan: {
+        color: "#2563EB",
+    },
 });

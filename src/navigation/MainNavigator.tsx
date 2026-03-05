@@ -18,6 +18,8 @@ import HelpSupportScreen from '~/screens/help-support/HelpSupportScreen';
 import { useAppColors } from '~/hooks/useAppColors';
 import DrawerNavigator from './DrawerNavigator';
 import ActiveSessionsScreen from '~/screens/security/ActiveSessionsScreen';
+import ProjectDetailScreen from '~/screens/project-detail/ProjectDetail';
+import PaymentScheduleScreen from '~/screens/payment-schedule/PaymentSchedule';
 
 export type MainParamList = {
     // MainTab: NavigatorScreenParams<BottomTabParamList>;
@@ -33,6 +35,8 @@ export type MainParamList = {
     About: undefined;
     Language: undefined;
     ActiveSessions: undefined;
+    ProjectDetail: { projectId: number };
+    PaymentSchedule: { projectId: number };
 
 
 };
@@ -79,6 +83,8 @@ export default function MainStack() {
             <Stack.Screen name="About" options={{ title: t('tab.about') }} component={AboutScreen} />
             <Stack.Screen name="Language" options={{ title: t('tab.language') }} component={LanguageScreen} />
             <Stack.Screen name="ActiveSessions" options={{ title: t('security.activeSessions') }} component={ActiveSessionsScreen} />
+            <Stack.Screen name="ProjectDetail" options={{ title: t('project.detail') }} component={ProjectDetailScreen} />
+            <Stack.Screen name="PaymentSchedule" options={{ title: t('project.paymentSchedule') }} component={PaymentScheduleScreen} />
         </Stack.Navigator>
     );
 }

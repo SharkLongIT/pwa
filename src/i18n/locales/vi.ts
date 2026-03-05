@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import { all } from "axios";
 
 export default {
     welcome_back: "Chào mừng bạn quay trở lại",
@@ -16,6 +17,13 @@ export default {
         keyword: "Từ khóa",
         enterKeyword: "Nhập từ khóa...",
         back: "Quay lại",
+        delete: 'Xóa',
+        createSuccess: "Tạo mới thành công",
+        updateSuccess: "Cập nhật thành công",
+        deleteSuccess: "Xóa thành công",
+        confirmDeleteTitle: "Xác nhận xoá",
+        confirmDeleteMessage: "Bạn có chắc chắn muốn xoá mục này không?",
+        action: "Hành động",
     },
 
     notification: {
@@ -250,6 +258,57 @@ Nếu bạn có bất kỳ câu hỏi hoặc quan ngại nào về chính sách 
         morning: "Chào buổi sáng",
         afternoon: "Chào buổi chiều",
         evening: "Chào buổi tối"
+    },
+    project: {
+        create: "Tạo dự án mới",
+        edit: "Cập nhật dự án",
+        name: "Tên dự án",
+        namePlaceholder: "Nhập tên dự án",
+        type: "Loại dự án",
+        cost: "Chi phí",
+        costPlaceholder: "Nhập chi phí dự kiến",
+        slotPayment: "Đợt thanh toán",
+        slotPaymentPlaceholder: "Nhập số đợt thanh toán",
+        typePlaceholder: "Chọn loại dự án",
+        dateStart: "Ngày bắt đầu",
+        dateEnd: "Ngày kết thúc",
+        costPlan: "Chi phí dự kiến",
+        costRate: "Tỷ lệ chi phí (%)",
+        profitPlan: "Kế hoạch lợi nhuận",
+        profitRate: "Tỷ lệ lợi nhuận (%)",
+
+        marginRate: "Tỷ lệ biên lợi nhuận (%)",
+        feedbackRate: "Tỷ lệ phản hồi (%)",
+        selectProjectType: "Chọn loại dự án",
+        status: "Trạng thái",
+        statusOptions: {
+            all: "Tất cả",
+            draft: "Chưa bắt đầu",
+            active: "Đang tiến hành",
+            completed: "Đã hoàn thành",
+            unknown: "Không xác định"
+
+        },
+        createSuccess: "Dự án đã được tạo thành công",
+        createFailed: "Tạo dự án thất bại. Vui lòng thử lại",
+        nameError: "Vui lòng nhập tên dự án",
+        dateStartError: "Vui lòng chọn ngày bắt đầu",
+        dateEndError: "Vui lòng chọn ngày kết thúc",
+        costError: "Vui lòng nhập chi phí dự kiến",
+        slotPaymentError: "Vui lòng nhập số đợt thanh toán",
+        typeError: "Vui lòng chọn loại dự án",
+        detail: "Chi tiết dự án",
+
+        generalInfo: "Thông tin chung",
+        finance: "Tài chính",
+        timeProcess: "Tiến độ thời gian",
+        costProcess: "Tiến độ chi phí",
+        timeline: "Lịch trình",
+        code: "Mã dự án",
+        paymentSchedule: "Lịch thanh toán",
+        overview: "Tổng quan",
+        noProject: "Không có dự án",
+        fiter: 'Nhập từ khóa...'
     }
 
 

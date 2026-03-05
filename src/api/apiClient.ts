@@ -12,12 +12,12 @@ import { clearData, getData } from '~/utils/helper/storage';
 // =======================
 // CONFIG
 // =======================
-const BASE_URL = 'http://192.168.0.38:36004';
+const BASE_URL = 'http://192.168.0.30:55080';
 
 // =======================
 // TOKEN HELPERS (mock)
 // =======================
-// 👉 anh thay bằng AsyncStorage / SecureStore
+// AsyncStorage / SecureStore
 const getAccessToken = async (): Promise<string | null> => {
     const resToken = await getData(StorageEnum.ACCESS_TOKEN);
     return resToken;

@@ -198,8 +198,8 @@ import { useAppColors } from '~/hooks/useAppColors';
 import { DeleteAccountModal } from './modal/DeleteAccount';
 
 const MenuScreen = () => {
-    const navigation =
-        useNavigation<NativeStackNavigationProp<BottomTabParamList>>();
+    // const navigation =
+    //     useNavigation<NativeStackNavigationProp<BottomTabParamList>>();
     const navigationMain =
         useNavigation<NativeStackNavigationProp<MainParamList>>();
 
@@ -233,7 +233,7 @@ const MenuScreen = () => {
 
                 {/* ACCOUNT */}
                 <Section>
-                    <MenuItem title={t('tab.profile')} onPress={() => navigation.navigate('Profile')} />
+                    <MenuItem title={t('tab.profile')} onPress={() => navigationMain.navigate('Profile')} />
                     {/* <MenuItem title={t('tab.notification')} onPress={() => navigation.navigate('Notifications')} /> */}
                     <MenuItem title={t('tab.security')} onPress={() => navigationMain.navigate('Security')} />
                 </Section>

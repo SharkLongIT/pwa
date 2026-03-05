@@ -49,11 +49,12 @@ function CustomDrawer(props: any) {
             {/* HEADER */}
             <View style={styles.header}>
                 <Image
-                    source={{
-                        uri:
-                            //   user?.avatar ||
-                            "https://i.pravatar.cc/100",
-                    }}
+                    // source={{
+                    //     uri:
+                    //         //   user?.avatar ||
+                    //         "https://i.pravatar.cc/100",
+                    // }}
+                    source={require("~/assets/images/default-avatar.png")}
                     style={styles.avatar}
                 />
                 <View style={styles.boxInfo}>
@@ -107,12 +108,12 @@ function CustomDrawer(props: any) {
 
 
 
-            {/* <DrawerItem
+            <DrawerItem
                 label="Cài đặt"
                 icon="settings-outline"
                 onPress={() => navigateStack("Settings")}
                 isDark={isDark}
-            /> */}
+            />
 
             <View style={styles.divider} />
 
