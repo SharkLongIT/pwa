@@ -1,9 +1,19 @@
+{
+  "extends": "./node_modules/@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    }
+  }
+}
 // {
-//   "extends": "@react-native/typescript-config",
+//   // "extends": "@react-native/typescript-config/tsconfig.json",
+//   "extends": "./node_modules/@react-native/typescript-config/tsconfig.json",
 //   "compilerOptions": {
-//     "types": [
-//       "jest"
-//     ],
 //     "jsx": "react",
 //     "baseUrl": "./src",
 //     "paths": {
@@ -11,26 +21,5 @@
 //         "*"
 //       ]
 //     }
-//   },
-//   "include": [
-//     "**/*.ts",
-//     "**/*.tsx"
-//   ],
-//   "exclude": [
-//     "**/node_modules",
-//     "**/Pods"
-//   ]
+//   }
 // }
-{
-  // "extends": "@react-native/typescript-config/tsconfig.json",
-  "extends": "./node_modules/@react-native/typescript-config/tsconfig.json",
-  "compilerOptions": {
-    "jsx": "react",
-    "baseUrl": "./src",
-    "paths": {
-      "~/*": [
-        "*"
-      ]
-    }
-  }
-}
