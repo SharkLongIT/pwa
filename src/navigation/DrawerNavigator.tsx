@@ -109,9 +109,9 @@ function CustomDrawer(props: any) {
 
 
             <DrawerItem
-                label="Cài đặt"
+                label={t("tab.settings")}
                 icon="settings-outline"
-                onPress={() => navigateStack("Settings")}
+                onPress={() => navigateStack("Security")}
                 isDark={isDark}
             />
 

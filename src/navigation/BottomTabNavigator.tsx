@@ -32,6 +32,7 @@ import { appEvent } from '~/utils/appEvent';
 import { EVENT } from '~/utils/enum';
 import { showToast } from '~/utils/toast';
 import { t } from 'i18next';
+import { useAppColors } from '~/hooks/useAppColors';
 
 /* -------------------- Types -------------------- */
 export type BottomTabParamList = {
@@ -54,9 +55,10 @@ const TAB_WIDTH = TAB_BAR_WIDTH / TAB_COUNT;
 /* -------------------- Custom TabBar -------------------- */
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const [modalVisible, setModalVisible] = React.useState(false);
+    const colors = useAppColors();
 
     return (
-        <View style={styles.wrapper}>
+        <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
             <CreateUpdateProjectModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
@@ -66,7 +68,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                     showToast?.('success', t('project.createSuccess'), '', 'top');
                 }}
             />
-            <View style={styles.tabBar}>
+            <View style={[styles.tabBar, { backgroundColor: colors.background }]}>
                 {state.routes.map((route: any, index: number) => {
                     const { options } = descriptors[route.key];
                     const focused = state.index === index;
@@ -80,7 +82,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                                 onPress={() => setModalVisible(true)}
 
                             >
-                                <View style={styles.centerOuter}>
+                                <View style={[styles.centerOuter, { backgroundColor: colors.background, borderColor: colors.background, shadowColor: colors.background }]}>
                                     <View style={styles.centerInner}>
                                         {options.tabBarIcon({ focused: true })}
                                     </View>
@@ -112,10 +114,11 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 export default function BottomTabNavigator() {
     const { t } = useTranslation();
     const { items } = useNotifications();
+    const colors = useAppColors();
     return (
         <Tab.Navigator
             tabBar={(props) => <CustomTabBar {...props} />}
-            screenOptions={{ headerShown: false }}
+            screenOptions={{ headerShown: false, tabBarStyle: { backgroundColor: colors.background } }}
         >
             {/* HOME */}
             <Tab.Screen

@@ -19,7 +19,6 @@ import { useAppColors } from '~/hooks/useAppColors';
 import DrawerNavigator from './DrawerNavigator';
 import ActiveSessionsScreen from '~/screens/security/ActiveSessionsScreen';
 import ProjectDetailScreen from '~/screens/project-detail/ProjectDetail';
-import PaymentScheduleScreen from '~/screens/payment-schedule/PaymentSchedule';
 
 export type MainParamList = {
     // MainTab: NavigatorScreenParams<BottomTabParamList>;
@@ -76,7 +75,7 @@ export default function MainStack() {
             <Stack.Screen name="Settings" options={{ title: t('tab.settings') }} component={SettingsScreen} />
             <Stack.Screen name="ChangePasswordScreen" options={{ title: t('settings.changePassword') }} component={ChangePasswordScreen} />
             <Stack.Screen name="HelpSupport" options={{ title: t('tab.help') }} component={HelpSupportScreen} />
-            <Stack.Screen name="Security" options={{ title: t('tab.security') }} component={SecurityScreen} />
+            <Stack.Screen name="Security" options={{ title: t('tab.settings') }} component={SecurityScreen} />
             <Stack.Screen name="Theme" options={{ title: t('tab.theme') }} component={ThemeScreen} />
             <Stack.Screen name="Terms" options={{ title: t('tab.terms') }} component={TermsScreen} />
             <Stack.Screen name="PrivacyPolicy" options={{ title: t('tab.privacyPolicy') }} component={PrivacyPolicyScreen} />
@@ -84,7 +83,6 @@ export default function MainStack() {
             <Stack.Screen name="Language" options={{ title: t('tab.language') }} component={LanguageScreen} />
             <Stack.Screen name="ActiveSessions" options={{ title: t('security.activeSessions') }} component={ActiveSessionsScreen} />
             <Stack.Screen name="ProjectDetail" options={{ title: t('project.detail') }} component={ProjectDetailScreen} />
-            <Stack.Screen name="PaymentSchedule" options={{ title: t('project.paymentSchedule') }} component={PaymentScheduleScreen} />
         </Stack.Navigator>
     );
 }
