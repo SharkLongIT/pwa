@@ -89,7 +89,7 @@ export const useCreateProjectForm = (visible: boolean) => {
 
     const validateAll = () => {
         const results = [
-            // validateField('projectName', projectName),
+            validateField('projectName', projectName),
             validateField('cost', costRaw),
             validateField('slotPayment', slotPayment),
             validateField('projectTypeId', projectTypeId),

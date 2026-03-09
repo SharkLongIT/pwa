@@ -6,6 +6,7 @@ import { useAppColors } from '~/hooks/useAppColors';
 import projectFe from '~/api/projectType.api';
 import { useProject } from '../ProjectContext';
 import { useTranslation } from 'react-i18next';
+import { BaseContent } from '~/components/base-screen/BaseContent';
 
 const PaymentTab = () => {
     const colors = useAppColors();
@@ -13,79 +14,82 @@ const PaymentTab = () => {
     const { t } = useTranslation();
 
     return (
-        <FlatList
-            contentContainerStyle={{ padding: 16 }}
-            data={project?.paymentSchedules || []}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-                const isPaid = item.status === 'PAID';
+        <BaseContent>
+            <FlatList
+                contentContainerStyle={{ padding: 16 }}
+                data={project?.paymentSchedules || []}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => {
+                    const isPaid = item.status === 'PAID';
 
-                return (
-                    <View style={styles.row}>
-                        {/* Timeline */}
-                        <View style={styles.timeline}>
-                            <View style={styles.dot} />
-                            {index !== project?.paymentSchedules.length - 1 && (
-                                <View style={styles.line} />
-                            )}
-                        </View>
+                    return (
+                        <View style={styles.row}>
+                            {/* Timeline */}
+                            <View style={styles.timeline}>
+                                <View style={styles.dot} />
+                                {index !== project?.paymentSchedules.length - 1 && (
+                                    <View style={styles.line} />
+                                )}
+                            </View>
 
-                        {/* Card */}
-                        <View style={[styles.card, { backgroundColor: colors.card }]}>
-                            {/* Header */}
-                            <View style={styles.header}>
-                                <Text style={styles.code}>
-                                    {item.projectCode}
-                                </Text>
+                            {/* Card */}
+                            <View style={[styles.card, { backgroundColor: colors.card }]}>
+                                {/* Header */}
+                                <View style={styles.header}>
+                                    <Text style={[styles.code, { color: colors.textPrimary }]}>
+                                        {item.projectCode}
+                                    </Text>
 
-                                <View
-                                    style={[
-                                        styles.badge,
-                                        {
-                                            backgroundColor: isPaid
-                                                ? '#22c55e20'
-                                                : '#f59e0b20',
-                                        },
-                                    ]}
-                                >
-                                    <Text
-                                        style={{
-                                            color: isPaid
-                                                ? '#22c55e'
-                                                : '#f59e0b',
-                                            fontWeight: '600',
-                                        }}
+                                    <View
+                                        style={[
+                                            styles.badge,
+                                            {
+                                                backgroundColor: isPaid
+                                                    ? '#22c55e20'
+                                                    : '#f59e0b20',
+                                            },
+                                        ]}
                                     >
-                                        {isPaid ? t('payment.paid') : t('payment.unpaid')}
+                                        <Text
+                                            style={{
+                                                color: isPaid
+                                                    ? '#22c55e'
+                                                    : '#f59e0b',
+                                                fontWeight: '600',
+                                            }}
+                                        >
+                                            {isPaid ? t('payment.paid') : t('payment.unpaid')}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* Body */}
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.label}>{t('payment.paymentDate')}</Text>
+                                    <Text style={[styles.value, { color: colors.textSecondary }]}>
+                                        {formatDate(item.paymentDate)}
                                     </Text>
                                 </View>
-                            </View>
 
-                            {/* Body */}
-                            <View style={styles.infoRow}>
-                                <Text style={styles.label}>{t('payment.paymentDate')}</Text>
-                                <Text style={styles.value}>
-                                    {formatDate(item.paymentDate)}
-                                </Text>
-                            </View>
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.label}>{t('payment.amount')}</Text>
+                                    <Text style={styles.amount}>
+                                        {formatCurrency(item.amount)}
+                                    </Text>
+                                </View>
 
-                            <View style={styles.infoRow}>
-                                <Text style={styles.label}>{t('payment.amount')}</Text>
-                                <Text style={styles.amount}>
-                                    {formatCurrency(item.amount)}
-                                </Text>
+                                {item.note && (
+                                    <Text style={styles.note}>
+                                        {t('payment.note')}: {item.note}
+                                    </Text>
+                                )}
                             </View>
-
-                            {item.note && (
-                                <Text style={styles.note}>
-                                    {t('payment.note')}: {item.note}
-                                </Text>
-                            )}
                         </View>
-                    </View>
-                );
-            }}
-        />
+                    );
+                }}
+            />
+        </BaseContent>
+
     );
 };
 

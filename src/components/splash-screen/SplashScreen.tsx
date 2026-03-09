@@ -24,7 +24,7 @@ const SplashScreen = () => {
                     />
 
                     <Text style={[styles.appName, { color: colors.textPrimary }]}>
-                        React Native Core
+                        PWA Kit
                     </Text>
 
                     <Text style={[styles.tagline, { color: colors.textSecondary }]}>

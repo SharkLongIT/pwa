@@ -153,7 +153,7 @@ const HomeScreen = () => {
                 }
             >
                 <View style={styles.cardHeader}>
-                    <Text style={styles.projectCode}>
+                    <Text style={[styles.projectCode, { color: colors.textPrimary }]}>
                         {item.projectCode}
                     </Text>
 
@@ -172,23 +172,23 @@ const HomeScreen = () => {
                                 fontWeight: "600",
                             }}
                         >
-                            {getStatusText(item.status)}
+                            {getStatusText(item.status, t)}
                         </Text>
                     </View>
                 </View>
 
-                <Text style={styles.text}>
+                <Text style={[styles.text, { color: colors.textSecondary }]}>
                     {t("project.type")}: {item.projectTypeCode}
                 </Text>
 
-                <Text style={styles.text}>
+                <Text style={[styles.text, { color: colors.textSecondary }]}>
                     {formatDate(item.startDate)} -{" "}
                     {formatDate(item.endDate)}
                 </Text>
 
                 <View style={styles.divider} />
 
-                <Text style={styles.cost}>
+                <Text style={[styles.cost, { color: colors.textSecondary }]}>
                     {t("project.cost")}:{" "}
                     {formatCurrency(item.cost)}
                 </Text>
@@ -219,7 +219,8 @@ const HomeScreen = () => {
             name: t('project.cost'),
             value: totalCost,
             color: "#ef4444",
-            legendFontColor: "#374151",
+            // legendFontColor: "#374151",
+            legendFontColor: colors.textPrimary,
             legendFontSize: 12,
         },
         {
@@ -227,7 +228,8 @@ const HomeScreen = () => {
             name: t('project.profitPlan'),
             value: totalProfit,
             color: "#16a34a",
-            legendFontColor: "#374151",
+            // legendFontColor: "#374151",
+            legendFontColor: colors.textPrimary,
             legendFontSize: 12,
         },
     ];
@@ -278,7 +280,7 @@ const HomeScreen = () => {
                                     <Text style={styles.welcome}>
                                         {t("welcome_back")}
                                     </Text>
-                                    <Text style={styles.userName}>
+                                    <Text style={[styles.userName, { color: colors.textPrimary }]}>
                                         {auth?.name ?? "User"} 👋
                                     </Text>
                                 </View>
@@ -290,16 +292,13 @@ const HomeScreen = () => {
                             </View>
 
                             {/* SEARCH */}
-                            <View
-                                style={[
-                                    styles.searchBox,
-                                    { backgroundColor: colors.card },
-                                ]}
-                            >
+                            <View style={[styles.searchBox, { backgroundColor: colors.card },]} >
                                 <TextInput
                                     placeholder={t('project.filter')}
                                     value={keyword}
                                     onChangeText={handleSearch}
+                                    style={{ color: colors.inputText }}
+                                    placeholderTextColor={colors.inputPlaceholder}
                                 />
                             </View>
 
@@ -308,25 +307,10 @@ const HomeScreen = () => {
                                 {STATUS_OPTIONS.map((item) => (
                                     <Pressable
                                         key={item.labelKey}
-                                        style={[
-                                            styles.filterChip,
-                                            selectedStatus ===
-                                            item.value &&
-                                            styles.filterActive,
-                                        ]}
-                                        onPress={() =>
-                                            setSelectedStatus(item.value)
-                                        }
+                                        style={[styles.filterChip, selectedStatus === item.value && styles.filterActive]}
+                                        onPress={() => setSelectedStatus(item.value)}
                                     >
-                                        <Text
-                                            style={{
-                                                color:
-                                                    selectedStatus ===
-                                                        item.value
-                                                        ? "#fff"
-                                                        : "#6b7280",
-                                            }}
-                                        >
+                                        <Text style={{ color: selectedStatus === item.value ? "#fff" : "#6b7280", }}>
                                             {t(item.labelKey)}
                                         </Text>
                                     </Pressable>
@@ -334,13 +318,8 @@ const HomeScreen = () => {
                             </View>
 
                             {/* SUMMARY */}
-                            <View
-                                style={[
-                                    styles.summaryCard,
-                                    { backgroundColor: colors.card },
-                                ]}
-                            >
-                                <Text style={styles.sectionTitle}>
+                            <View style={[styles.summaryCard, { backgroundColor: colors.card },]}  >
+                                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
                                     {t('project.overview')}
                                 </Text>
 
@@ -360,7 +339,6 @@ const HomeScreen = () => {
                                         absolute={false}
                                     />
                                 </View>
-
                                 {/* <Text>
                                     Tổng chi phí:{" "}
                                     {formatCurrency(totalCost)}

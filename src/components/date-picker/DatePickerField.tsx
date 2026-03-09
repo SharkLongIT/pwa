@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 type PickerMode = "date" | "time";
 
@@ -26,8 +27,8 @@ const DatePickerField = ({
     const [tempDate, setTempDate] = useState<Date>(value || new Date());
     const [mode, setMode] = useState<PickerMode>(initialMode);
     const { t } = useTranslation();
-    const onConfirm = () => {
-        onChange(tempDate);
+    const onConfirm = (date: Date) => {
+        onChange(date);
         setVisible(false);
     };
 
@@ -49,8 +50,28 @@ const DatePickerField = ({
                 </Text>
             </TouchableOpacity>
             {error && <Text style={styles.errorText}>{error}</Text>}
+            <DateTimePickerModal
+                isVisible={visible}
+                mode="date"
+                // minimumDate={new Date()}
+                minimumDate={minDate ?? undefined}
+                maximumDate={maxDate ?? undefined}
+                // date={value || new Date()}
+                date={value instanceof Date ? value : new Date()}
+                onConfirm={(date) => {
+                    // console.log("Ngày được chọn:", date.toISOString());
+                    //handleConfirm(date);
+                    //setTempDate(date);
+                    onConfirm(date);
+
+                }}
+                onCancel={() => setVisible(false)}
+                locale="vi"
+                cancelTextIOS="Hủy"
+                confirmTextIOS="Chọn"
+            />
             {/* MODAL */}
-            <Modal
+            {/* <Modal
                 visible={visible}
                 transparent
                 animationType="slide"
@@ -62,20 +83,17 @@ const DatePickerField = ({
                 />
 
                 <View style={styles.sheet}>
-                    {/* HEADER */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => setVisible(false)}>
                             <Text style={styles.cancel}>{t("common.cancel")}</Text>
                         </TouchableOpacity>
 
-                        {/* SELECT MODE */}
 
                         <TouchableOpacity onPress={onConfirm}>
                             <Text style={styles.confirm}>{t("common.done")}</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* PICKER */}
                     <DateTimePicker
                         value={tempDate}
                         mode={mode}
@@ -91,7 +109,7 @@ const DatePickerField = ({
                         style={{ backgroundColor: "#fff" }}
                     />
                 </View>
-            </Modal>
+            </Modal> */}
         </>
     );
 };

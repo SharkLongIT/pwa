@@ -34,8 +34,8 @@ const OnBoardingScreen = () => {
                         <Text style={styles.welcome}>Welcome</Text>
 
                         <Text style={styles.description}>
-                            Build faster. Stay focused.
-                            {"\n"}Your workflow starts here.
+                            High performance. Modern architecture.
+                            {"\n"}Everything you need for PWA.
                         </Text>
                     </View>
 

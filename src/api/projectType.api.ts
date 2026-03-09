@@ -26,6 +26,9 @@ const projectFe = {
     activateProject(projectId: number): Promise<any> {
         return apiClient.post(`/api/services/app/ProjectFe/ActivateProject?projectId=${projectId}`);
     },
+    updateStatusProject(data: any): Promise<any> {
+        return apiClient.put('/api/services/app/ProjectFe/UpdateStatusProject', data);
+    },
 
     getProjectDetail(projectId: number): Promise<IAbpProjectTypeResponse<any>> {
         return apiClient.get(`/api/services/app/ProjectFe/GetProjectDetail?projectId=${projectId}`);

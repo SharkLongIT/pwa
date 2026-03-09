@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     divider: {
-        height: 1,
+        height: 0.5,
         backgroundColor: "#E2E8F0",
         marginVertical: 0,
         marginHorizontal: -20

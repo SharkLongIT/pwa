@@ -444,7 +444,7 @@ const LoginScreen = () => {
             {/* CARD */}
             <View style={styles.card}>
                 <GradientText
-                    text={t("login.getStarted") || "Get Started"}
+                    text={t("login.getStarted")}
                     style={styles.title}
                 />
 

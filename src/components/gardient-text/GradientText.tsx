@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 const GradientText = ({ text, style }: { text: string; style?: any }) => {
     return (
         <MaskedView
+            style={{ backgroundColor: 'transparent' }}
             maskElement={
                 <Text style={[style, styles.maskText]}>
                     {text}

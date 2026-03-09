@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
 const getStatusColor = (status: number) => {
     switch (status) {
@@ -19,22 +20,23 @@ export { getStatusColor };
 //     }
 // }
 // export { getText };
-const getStatusText = (status: number, t?: any) => {
+// const getStatusText = (status: number, t?: any) => {
+//     switch (status) {
+//         case 0: return "Draft"; // t("project.statusOptions.draft");
+//         case 1: return "Active"; // t("project.statusOptions.active");
+//         case 2: return "Completed"; // t("project.statusOptions.completed");
+//         default: return "Unknown"; // t("project.statusOptions.unknown");
+//     }
+// }
+export const getStatusText = (status: number, t: TFunction) => {
     switch (status) {
-        // case 0: return t("project.statusOptions.draft");
-        // case 1: return t("project.statusOptions.active");
-        // case 2: return t("project.statusOptions.completed");
-        // default: return t("project.statusOptions.unknown");
-        // case 0: return getText("draft", t);
-        // case 1: return getText("active", t);
-        // case 2: return getText("completed", t);
-        // default: return getText("unknown", t);
-        case 0: return "Draft"; // t("project.statusOptions.draft");
-        case 1: return "Active"; // t("project.statusOptions.active");
-        case 2: return "Completed"; // t("project.statusOptions.completed");
-        default: return "Unknown"; // t("project.statusOptions.unknown");
-
-
+        case 0:
+            return t("project.statusOptions.draft");
+        case 1:
+            return t("project.statusOptions.active");
+        case 2:
+            return t("project.statusOptions.completed");
+        default:
+            return t("project.statusOptions.unknown");
     }
-}
-export { getStatusText };
+};

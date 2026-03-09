@@ -6,6 +6,7 @@ import { getStatusText } from '~/utils/helper/status';
 import { useAppColors } from '~/hooks/useAppColors';
 import AnimatedProgressBar from '~/components/animated-process/AnimatedProgressBar';
 import { useProject } from '../ProjectContext';
+import { BaseContent } from '~/components/base-screen/BaseContent';
 
 const OverviewTab = () => {
     const { t } = useTranslation();
@@ -29,91 +30,99 @@ const OverviewTab = () => {
     if (!project) return null;
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={[styles.heroCard, { backgroundColor: colors.primary }]}>
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.heroCode}>
-                        {project?.projectCode}
-                    </Text>
+        <BaseContent>
+            <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+                <View style={[styles.heroCard, { backgroundColor: colors.primary }]}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.heroCode}>
+                            {project?.projectCode}
+                        </Text>
 
-                    <Text style={styles.heroDate}>
-                        {formatDate(project?.startDate)} - {formatDate(project?.endDate)}
-                    </Text>
-                </View>
-
-                <View style={styles.heroStatus}>
-                    <Text style={styles.heroStatusText}>
-                        {getStatusText(project?.status)}
-                    </Text>
-                </View>
-            </View>
-            <View style={styles.kpiRow}>
-                <View style={[styles.kpiCard, { backgroundColor: colors.card }]}>
-                    <Text style={styles.kpiLabel}>{t('project.costPlan')}</Text>
-                    <Text style={styles.kpiValue}>
-                        {formatCurrency(project?.costPlan)}
-                    </Text>
-                </View>
-
-                <View style={[styles.kpiCard, { backgroundColor: colors.card }]}>
-                    <Text style={styles.kpiLabel}>{t('project.profitPlan')}</Text>
-                    <Text style={styles.kpiValueGreen}>
-                        {formatCurrency(project?.profitPlan)}
-                    </Text>
-                </View>
-            </View>
-            <View style={[styles.card, { backgroundColor: colors.card }]}>
-                <Text style={styles.sectionTitle}>
-                    {t('project.timeline')}
-                </Text>
-
-                <AnimatedProgressBar percent={timeProgress} color="#3B82F6" />
-
-                <View style={styles.timelineFooter}>
-                    <Text style={styles.percent}>
-                        {timeProgress.toFixed(1)}%
-                    </Text>
-                    <Text style={styles.slotText}>
-                        {t('project.slotPayment')}: {project?.slotPayment}
-                    </Text>
-                </View>
-            </View>
-            <View style={[styles.card, { backgroundColor: colors.card }]}>
-                <Text style={styles.sectionTitle}>
-                    {t('project.type')}
-                </Text>
-
-                <View style={styles.grid}>
-                    <View style={styles.gridItem}>
-                        <Text style={styles.gridLabel}>{t('project.code')}</Text>
-                        <Text style={styles.gridValue}>
-                            {project?.projectType?.code}
+                        <Text style={styles.heroDate}>
+                            {formatDate(project?.startDate)} - {formatDate(project?.endDate)}
+                        </Text>
+                        <Text style={styles.heroDate}>
+                            {/* {project.cost} */}
+                            {t("project.cost")}:{" "}
+                            {formatCurrency(project.cost)}
                         </Text>
                     </View>
 
-                    <View style={styles.gridItem}>
-                        <Text style={styles.gridLabel}>{t('project.costRate')}</Text>
-                        <Text style={styles.gridValue}>
-                            {project?.projectType?.costRate} %
-                        </Text>
-                    </View>
-
-                    <View style={styles.gridItem}>
-                        <Text style={styles.gridLabel}>{t('project.profitRate')}</Text>
-                        <Text style={styles.gridValue}>
-                            {project?.projectType?.profitRate} %
-                        </Text>
-                    </View>
-
-                    <View style={styles.gridItem}>
-                        <Text style={styles.gridLabel}>{t('project.marginRate')}</Text>
-                        <Text style={styles.gridValue}>
-                            {project?.projectType?.marginRate} %
+                    <View style={styles.heroStatus}>
+                        <Text style={styles.heroStatusText}>
+                            {getStatusText(project?.status, t)}
                         </Text>
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+                <View style={styles.kpiRow}>
+                    <View style={[styles.kpiCard, { backgroundColor: colors.card }]}>
+                        <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>{t('project.costPlan')}</Text>
+                        <Text style={[styles.kpiValue, { color: colors.textPrimary }]}>
+                            {formatCurrency(project?.costPlan)}
+                        </Text>
+                    </View>
+
+                    <View style={[styles.kpiCard, { backgroundColor: colors.card }]}>
+                        <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>{t('project.profitPlan')}</Text>
+                        <Text style={styles.kpiValueGreen}>
+                            {formatCurrency(project?.profitPlan)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                        {t('project.timeline')}
+                    </Text>
+
+                    <AnimatedProgressBar percent={timeProgress} color="#3B82F6" />
+
+                    <View style={styles.timelineFooter}>
+                        <Text style={styles.percent}>
+                            {timeProgress.toFixed(1)}%
+                        </Text>
+                        <Text style={styles.slotText}>
+                            {t('project.slotPayment')}: {project?.slotPayment}
+                        </Text>
+                    </View>
+                </View>
+                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                        {t('project.type')}
+                    </Text>
+
+                    <View style={styles.grid}>
+                        <View style={styles.gridItem}>
+                            <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.code')}</Text>
+                            <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
+                                {project?.projectType?.code}
+                            </Text>
+                        </View>
+
+                        <View style={styles.gridItem}>
+                            <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.costRate')}</Text>
+                            <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
+                                {project?.projectType?.costRate} %
+                            </Text>
+                        </View>
+
+                        <View style={styles.gridItem}>
+                            <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.profitRate')}</Text>
+                            <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
+                                {project?.projectType?.profitRate} %
+                            </Text>
+                        </View>
+
+                        <View style={styles.gridItem}>
+                            <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.marginRate')}</Text>
+                            <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
+                                {project?.projectType?.marginRate} %
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+            </ScrollView>
+        </BaseContent>
+
     );
 };
 

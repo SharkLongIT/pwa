@@ -23,6 +23,7 @@ const AppInput: React.FC<AppInputProps> = ({
     secureTextEntry,
     containerStyle,
     style,
+    keyboardType,
     onChangeText,
     ...props
 }) => {
@@ -34,8 +35,6 @@ const AppInput: React.FC<AppInputProps> = ({
                 <Text style={styles.label}>
                     {label}
                     {required && <Text style={styles.required}> *</Text>}
-
-
                 </Text>
             )}
 
@@ -45,7 +44,13 @@ const AppInput: React.FC<AppInputProps> = ({
                     secureTextEntry={isSecure}
                     placeholderTextColor="#9CA3AF"
                     {...props}
-                    onChangeText={onChangeText}
+                    // onChangeText={onChangeText}
+                    onChangeText={(text) => {
+                        if (keyboardType === "numeric") {
+                            text = text.replace(/[^0-9]/g, '');
+                        }
+                        onChangeText?.(text);
+                    }}
                 />
 
                 {secureTextEntry && (
