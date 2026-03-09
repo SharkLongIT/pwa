@@ -275,6 +275,7 @@ If you have any questions or concerns regarding this Privacy Policy, please cont
         costRate: "Cost Rate (%)",
         profitPlan: "Profit Plan",
         profitRate: "Profit Rate (%)",
+        selectTypeToCalculate: "Select project type to calculate",
 
         marginRate: "Margin Rate (%)",
         feedbackRate: "Feedback Rate (%)",

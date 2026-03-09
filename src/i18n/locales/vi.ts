@@ -276,6 +276,7 @@ Nếu bạn có bất kỳ câu hỏi hoặc quan ngại nào về chính sách 
         costRate: "Tỷ lệ chi phí (%)",
         profitPlan: "Kế hoạch lợi nhuận",
         profitRate: "Tỷ lệ lợi nhuận (%)",
+        selectTypeToCalculate: "Chọn loại dự án để tính toán",
 
         marginRate: "Tỷ lệ biên lợi nhuận (%)",
         feedbackRate: "Tỷ lệ phản hồi (%)",
@@ -308,8 +309,14 @@ Nếu bạn có bất kỳ câu hỏi hoặc quan ngại nào về chính sách 
         paymentSchedule: "Lịch thanh toán",
         overview: "Tổng quan",
         noProject: "Không có dự án",
-        fiter: 'Nhập từ khóa...'
+        filter: 'Nhập từ khóa...',
+    },
+    payment: {
+        paid: "Đã thanh toán",
+        unpaid: "Chưa thanh toán",
+        paymentDate: "Ngày thanh toán",
+        amount: "Tổng",
+        note: "Ghi chú"
     }
-
 
 };
