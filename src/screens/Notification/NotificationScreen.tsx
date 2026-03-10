@@ -122,6 +122,20 @@ const NotificationScreen = () => {
                                 </View>
                             ) : null
                         }
+                        ListEmptyComponent={() => {
+                            // if (loading) {
+                            //     return <ActivityIndicator style={{ marginTop: 40 }} />;
+                            // }
+                            if (items.length === 0) {
+                                return (
+                                    <Text style={styles.empty}>
+                                        {t("common.empty")}
+                                    </Text>
+                                );
+                            }
+                            return null;
+
+                        }}
                     />
                 </Animated.View>
             )}
@@ -222,5 +236,9 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
     },
-
+    empty: {
+        textAlign: "center",
+        marginTop: 40,
+        color: "#9CA3AF",
+    },
 });

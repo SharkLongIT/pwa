@@ -17,9 +17,16 @@ export default {
         enterKeyword: "Enter keyword...",
         back: "Back",
         delete: "Delete",
+        choose: "Choose",
+
         createSuccess: "Created successfully",
         updateSuccess: "Updated successfully",
         deleteSuccess: "Deleted successfully",
+
+        createError: "Create project type failed",
+        updateError: "Update project type failed",
+        deleteError: "Delete project type failed",
+
         confirmDeleteTitle: "Confirm Deletion",
         confirmDeleteMessage: "Are you sure you want to delete this item?",
         action: "Action"
@@ -273,12 +280,18 @@ If you have any questions or concerns regarding this Privacy Policy, please cont
         dateEnd: "End Date",
         costPlan: "Cost Plan",
         costRate: "Cost Rate (%)",
+        costRatePlaceholer: 'Enter code rate',
+
         profitPlan: "Profit Plan",
         profitRate: "Profit Rate (%)",
+        profitRatePlaceholder: 'Enter profit rate',
         selectTypeToCalculate: "Select project type to calculate",
 
         marginRate: "Margin Rate (%)",
+        marginRatePlaceholder: "Enter margin rate",
+
         feedbackRate: "Feedback Rate (%)",
+        feedbackRatePlaceholder: "Enter feedback rate",
         selectProjectType: "Select project type",
         status: "Status",
         statusOptions: {
@@ -311,11 +324,35 @@ If you have any questions or concerns regarding this Privacy Policy, please cont
         filter: 'Enter keyword...'
     },
     payment: {
-        paid: "Paid",
-        unpaid: "Unpaid",
-        paymentDate: "Payment Date",
-        amount: "Amount",
-        note: "Note"
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "markPaid": "Mark as Paid",
+        "confirm": "Confirmation",
+        "confirmPaid": "Are you sure you want to mark this payment as paid?",
+        "paymentDate": "Payment Date",
+        "amount": "Amount",
+        "note": "Note",
+        "phase": "Phase",
+        "paymentProgress": "Payment Progress",
+        "overdue": "Overdue"
+    },
+
+    "projectType": {
+        "createTitle": "Create Project Type",
+        "editTitle": "Edit Project Type",
+        "code": "Code",
+        "costRate": "Cost Rate (%)",
+        "profitRate": "Profit Rate (%)",
+        "marginRate": "Margin Rate (%)",
+        "feedbackRate": "Feedback Rate (%)",
+
+        "codeRequired": "Code is required",
+        "costRateRequired": "Cost rate is required",
+        "profitRateRequired": "Profit rate is required",
+        "marginRateRequired": "Margin rate is required",
+        "feedbackRateRequired": "Feedback rate is required",
+
+        "rateInvalid": "Value must be between 0 and 100"
     }
 
 

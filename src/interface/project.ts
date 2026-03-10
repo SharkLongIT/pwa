@@ -4,8 +4,8 @@ import { AxiosResponse } from "axios";
 export interface ProjectType {
     id: number;
     code: string;
-    costRate?: string;
-    profitRate: boolean;
+    costRate: string;
+    profitRate: string;
     marginRate: string;
     feedbackRate: string;
 }

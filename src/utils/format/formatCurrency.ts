@@ -15,3 +15,17 @@ export const formatDate = (dateString: string) => {
         year: 'numeric',
     });
 };
+
+export const formatMoney = (value: number | string) => {
+
+    if (value === null || value === undefined) return "";
+
+    const number = Number(value);
+
+    return new Intl.NumberFormat("vi-VN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(number);
+
+
+};

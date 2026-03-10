@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -13,26 +13,32 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import { PieChart } from "react-native-chart-kit";
+
 import projectFe from "~/api/projectType.api";
 import Weather from "~/components/weather/Weather";
 import { useAppColors } from "~/hooks/useAppColors";
 import { MainParamList } from "~/navigation/MainNavigator";
 import { RootState } from "~/redux/store";
+
 import { appEvent } from "~/utils/appEvent";
 import { EVENT, PAGINATION, STATUS_OPTIONS } from "~/utils/enum";
+
 import { formatCurrency, formatDate } from "~/utils/format/formatCurrency";
 import { getStatusColor, getStatusText } from "~/utils/helper/status";
-import { PieChart } from "react-native-chart-kit";
 
 const HomeScreen = () => {
     const navigation =
         useNavigation<NativeStackNavigationProp<MainParamList>>();
 
     const { t } = useTranslation();
-    const auth = useSelector((state: RootState) => state.auth.user);
     const colors = useAppColors();
 
+    const auth = useSelector((state: RootState) => state.auth.user);
+
     const [projects, setProjects] = useState<any[]>([]);
+    const [allProjects, setAllProjects] = useState<any[]>([]);
+
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -51,13 +57,13 @@ const HomeScreen = () => {
         isRefresh = false
     ) => {
         try {
+
             if (isLoadMore) setLoadingMore(true);
             else if (isRefresh) setRefreshing(true);
             else setLoading(true);
 
             const res = await projectFe.getAllProjectsByUserId({
                 status: selectedStatus,
-                keyword: keyword,
                 skipCount: (pageNumber - 1) * PAGINATION.pageSize,
                 maxResultCount: PAGINATION.pageSize,
             });
@@ -69,13 +75,13 @@ const HomeScreen = () => {
             setPage(pageNumber);
 
             if (isLoadMore) {
-                setProjects(prev => [...prev, ...items]);
+                setAllProjects(prev => [...prev, ...items]);
             } else {
-                setProjects(items);
+                setAllProjects(items);
             }
 
         } catch (err) {
-            console.log("Pagination error:", err);
+            console.log("Fetch error:", err);
         } finally {
             setLoading(false);
             setLoadingMore(false);
@@ -89,16 +95,11 @@ const HomeScreen = () => {
         fetchProjects();
     }, []);
 
-    /* ================= FILTER / SEARCH ================= */
+    /* ================= STATUS FILTER ================= */
 
     useEffect(() => {
         fetchProjects(1);
     }, [selectedStatus]);
-
-    const handleSearch = (text: string) => {
-        setKeyword(text);
-        fetchProjects(1);
-    };
 
     /* ================= REFRESH ================= */
 
@@ -109,39 +110,77 @@ const HomeScreen = () => {
     /* ================= LOAD MORE ================= */
 
     const handleLoadMore = () => {
-        if (!hasMore || loadingMore) return;
+
+        if (loading || loadingMore || !hasMore) return;
+
         fetchProjects(page + 1, true);
+
     };
 
     /* ================= EVENT REFRESH ================= */
 
     useEffect(() => {
+
         const listener = () => fetchProjects(1);
+
         appEvent.addListener(EVENT.PROJECT_CREATED, listener);
 
         return () => {
             appEvent.removeListener(EVENT.PROJECT_CREATED, listener);
         };
-    }, [selectedStatus, keyword]);
+
+    }, [selectedStatus]);
+
+    /* ================= SEARCH LOCAL ================= */
+
+    const filteredProjects = useMemo(() => {
+
+        if (!keyword) return allProjects;
+
+        const key = keyword.toLowerCase();
+
+        return allProjects.filter(p =>
+            p.projectCode?.toLowerCase().includes(key) ||
+            p.projectTypeCode?.toLowerCase().includes(key)
+        );
+
+    }, [keyword, allProjects]);
 
     /* ================= SUMMARY ================= */
 
     const totalCost = useMemo(
-        () => projects.reduce((sum, p) => sum + (p.cost ?? 0), 0),
-        [projects]
+        () => filteredProjects.reduce((sum, p) => sum + (p.cost ?? 0), 0),
+        [filteredProjects]
     );
 
     const totalProfit = useMemo(
-        () => projects.reduce((sum, p) => sum + (p.profitPlan ?? 0), 0),
-        [projects]
+        () => filteredProjects.reduce((sum, p) => sum + (p.profitPlan ?? 0), 0),
+        [filteredProjects]
     );
 
+    /* ================= CHART DATA ================= */
 
+    const donutData = [
+        {
+            name: t("project.cost"),
+            value: totalCost,
+            color: "#ef4444",
+            legendFontColor: colors.textPrimary,
+            legendFontSize: 12,
+        },
+        {
+            name: t("project.profitPlan"),
+            value: totalProfit,
+            color: "#16a34a",
+            legendFontColor: colors.textPrimary,
+            legendFontSize: 12,
+        },
+    ];
 
     /* ================= PROJECT CARD ================= */
 
-
     const ProjectCard = ({ item }: { item: any }) => {
+
         return (
             <Pressable
                 style={[styles.card, { backgroundColor: colors.card }]}
@@ -153,7 +192,13 @@ const HomeScreen = () => {
                 }
             >
                 <View style={styles.cardHeader}>
-                    <Text style={[styles.projectCode, { color: colors.textPrimary }]}>
+
+                    <Text
+                        style={[
+                            styles.projectCode,
+                            { color: colors.textPrimary },
+                        ]}
+                    >
                         {item.projectCode}
                     </Text>
 
@@ -175,6 +220,7 @@ const HomeScreen = () => {
                             {getStatusText(item.status, t)}
                         </Text>
                     </View>
+
                 </View>
 
                 <Text style={[styles.text, { color: colors.textSecondary }]}>
@@ -182,26 +228,23 @@ const HomeScreen = () => {
                 </Text>
 
                 <Text style={[styles.text, { color: colors.textSecondary }]}>
-                    {formatDate(item.startDate)} -{" "}
-                    {formatDate(item.endDate)}
+                    {formatDate(item.startDate)} - {formatDate(item.endDate)}
                 </Text>
 
                 <View style={styles.divider} />
 
                 <Text style={[styles.cost, { color: colors.textSecondary }]}>
-                    {t("project.cost")}:{" "}
-                    {formatCurrency(item.cost)}
+                    {t("project.cost")}: {formatCurrency(item.cost)}
                 </Text>
 
                 <Text style={styles.costPlan}>
-                    {t("project.costPlan")}:{" "}
-                    {formatCurrency(item.costPlan)}
+                    {t("project.costPlan")}: {formatCurrency(item.costPlan)}
                 </Text>
 
                 <Text style={styles.profit}>
-                    {t("project.profitPlan")}:{" "}
-                    {formatCurrency(item.profitPlan)}
+                    {t("project.profitPlan")}: {formatCurrency(item.profitPlan)}
                 </Text>
+
             </Pressable>
         );
     };
@@ -213,52 +256,38 @@ const HomeScreen = () => {
     );
 
     /* ================= RENDER ================= */
-    const donutData = [
-        {
-            // name: {t('project.cost')},
-            name: t('project.cost'),
-            value: totalCost,
-            color: "#ef4444",
-            // legendFontColor: "#374151",
-            legendFontColor: colors.textPrimary,
-            legendFontSize: 12,
-        },
-        {
-            // name: "Lợi nhuận",
-            name: t('project.profitPlan'),
-            value: totalProfit,
-            color: "#16a34a",
-            // legendFontColor: "#374151",
-            legendFontColor: colors.textPrimary,
-            legendFontSize: 12,
-        },
-    ];
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>
+
             <SafeAreaView edges={["top"]}>
                 <Weather />
             </SafeAreaView>
 
             <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+
                 <FlatList
-                    data={projects}
+                    data={filteredProjects}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <ProjectCard item={item} />
-                    )}
-                    onRefresh={handleRefresh}
+                    renderItem={({ item }) => <ProjectCard item={item} />}
                     refreshing={refreshing}
+                    onRefresh={handleRefresh}
                     onEndReached={handleLoadMore}
-                    onEndReachedThreshold={0.5}
+                    onEndReachedThreshold={0.4}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{
+                        padding: 20,
+                        paddingBottom: 80,
+                    }}
+
                     ListFooterComponent={
                         loadingMore ? (
                             <Text style={{ textAlign: "center" }}>
-                                {/* Loading more... */}
                                 {t("loading_more")}
                             </Text>
                         ) : null
                     }
+
                     ListEmptyComponent={
                         loading ? (
                             <>
@@ -267,93 +296,125 @@ const HomeScreen = () => {
                             </>
                         ) : (
                             <Text style={{ textAlign: "center" }}>
-                                {/* Không có dự án */}
                                 {t("project.noProject")}
                             </Text>
                         )
                     }
+
                     ListHeaderComponent={
                         <>
                             {/* HEADER */}
+
                             <View style={styles.header}>
+
                                 <View style={{ flex: 1 }}>
+
                                     <Text style={styles.welcome}>
                                         {t("welcome_back")}
                                     </Text>
-                                    <Text style={[styles.userName, { color: colors.textPrimary }]}>
+
+                                    <Text
+                                        style={[
+                                            styles.userName,
+                                            { color: colors.textPrimary },
+                                        ]}
+                                    >
                                         {auth?.name ?? "User"} 👋
                                     </Text>
+
                                 </View>
 
                                 <Image
                                     source={require("~/assets/images/default-avatar.png")}
                                     style={styles.avatar}
                                 />
+
                             </View>
 
                             {/* SEARCH */}
-                            <View style={[styles.searchBox, { backgroundColor: colors.card },]} >
+
+                            <View
+                                style={[
+                                    styles.searchBox,
+                                    { backgroundColor: colors.card },
+                                ]}
+                            >
                                 <TextInput
-                                    placeholder={t('project.filter')}
+                                    placeholder={t("project.filter")}
                                     value={keyword}
-                                    onChangeText={handleSearch}
+                                    onChangeText={setKeyword}
                                     style={{ color: colors.inputText }}
-                                    placeholderTextColor={colors.inputPlaceholder}
+                                    placeholderTextColor={
+                                        colors.inputPlaceholder
+                                    }
                                 />
                             </View>
 
                             {/* FILTER */}
+
                             <View style={styles.filterRow}>
                                 {STATUS_OPTIONS.map((item) => (
+
                                     <Pressable
                                         key={item.labelKey}
-                                        style={[styles.filterChip, selectedStatus === item.value && styles.filterActive]}
-                                        onPress={() => setSelectedStatus(item.value)}
+                                        style={[
+                                            styles.filterChip,
+                                            selectedStatus === item.value &&
+                                            styles.filterActive,
+                                        ]}
+                                        onPress={() =>
+                                            setSelectedStatus(item.value)
+                                        }
                                     >
-                                        <Text style={{ color: selectedStatus === item.value ? "#fff" : "#6b7280", }}>
+                                        <Text
+                                            style={{
+                                                color:
+                                                    selectedStatus ===
+                                                        item.value
+                                                        ? "#fff"
+                                                        : "#6b7280",
+                                            }}
+                                        >
                                             {t(item.labelKey)}
                                         </Text>
                                     </Pressable>
+
                                 ))}
                             </View>
 
                             {/* SUMMARY */}
-                            <View style={[styles.summaryCard, { backgroundColor: colors.card },]}  >
-                                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                                    {t('project.overview')}
+
+                            <View
+                                style={[
+                                    styles.summaryCard,
+                                    { backgroundColor: colors.card },
+                                ]}
+                            >
+
+                                <Text
+                                    style={[
+                                        styles.sectionTitle,
+                                        { color: colors.textPrimary },
+                                    ]}
+                                >
+                                    {t("project.overview")}
                                 </Text>
 
-                                <View style={{ height: 160 }}>
-                                    <PieChart
-                                        data={donutData}
-                                        width={300}
-                                        height={160}
-                                        chartConfig={{
-                                            color: (opacity = 1) =>
-                                                `rgba(0, 0, 0, ${opacity})`,
-                                        }}
-                                        accessor="value"
-                                        backgroundColor="transparent"
-                                        paddingLeft="15"
-                                        // absolute
-                                        absolute={false}
-                                    />
-                                </View>
-                                {/* <Text>
-                                    Tổng chi phí:{" "}
-                                    {formatCurrency(totalCost)}
-                                </Text>
-                                <Text>
-                                    Tổng lợi nhuận:{" "}
-                                    {formatCurrency(totalProfit)}
-                                </Text> */}
+                                <PieChart
+                                    data={donutData}
+                                    width={300}
+                                    height={160}
+                                    chartConfig={{
+                                        color: () => colors.textPrimary,
+                                    }}
+                                    accessor="value"
+                                    backgroundColor="transparent"
+                                    paddingLeft="15"
+                                />
+
                             </View>
                         </>
                     }
-                    contentContainerStyle={{
-                        padding: 20,
-                        paddingBottom: 80,
-                    }}
                 />
             </SafeAreaView>
         </View>
@@ -361,7 +422,6 @@ const HomeScreen = () => {
 };
 
 export default HomeScreen;
-
 /* ================= STYLES ================= */
 
 const styles = StyleSheet.create({

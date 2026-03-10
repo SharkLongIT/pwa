@@ -18,9 +18,15 @@ export default {
         enterKeyword: "Nhập từ khóa...",
         back: "Quay lại",
         delete: 'Xóa',
+        choose: "Lựa chọn",
         createSuccess: "Tạo mới thành công",
         updateSuccess: "Cập nhật thành công",
         deleteSuccess: "Xóa thành công",
+
+        createError: "Tạo mới thất bại",
+        updateError: "Cập nhật thất bại",
+        deleteError: "Xóa thất bại",
+
         confirmDeleteTitle: "Xác nhận xoá",
         confirmDeleteMessage: "Bạn có chắc chắn muốn xoá mục này không?",
         action: "Hành động",
@@ -274,12 +280,16 @@ Nếu bạn có bất kỳ câu hỏi hoặc quan ngại nào về chính sách 
         dateEnd: "Ngày kết thúc",
         costPlan: "Chi phí dự kiến",
         costRate: "Tỷ lệ chi phí (%)",
+        costRatePlaceholer: 'Vui lòng nhập tỉ lệ chi phí',
+
         profitPlan: "Kế hoạch lợi nhuận",
         profitRate: "Tỷ lệ lợi nhuận (%)",
+        profitRatePlaceholer: 'Vui lòng nhập tỉ lệ lợi nhuận',
         selectTypeToCalculate: "Chọn loại dự án để tính toán",
 
         marginRate: "Tỷ lệ biên lợi nhuận (%)",
         feedbackRate: "Tỷ lệ phản hồi (%)",
+        feedbackRatelaceholer: 'Vui lòng nhập tỉ lệ phản hồi',
         selectProjectType: "Chọn loại dự án",
         status: "Trạng thái",
         statusOptions: {
@@ -310,13 +320,38 @@ Nếu bạn có bất kỳ câu hỏi hoặc quan ngại nào về chính sách 
         overview: "Tổng quan",
         noProject: "Không có dự án",
         filter: 'Nhập từ khóa...',
+
+
+
     },
     payment: {
-        paid: "Đã thanh toán",
-        unpaid: "Chưa thanh toán",
-        paymentDate: "Ngày thanh toán",
-        amount: "Tổng",
-        note: "Ghi chú"
+        "paid": "Đã thanh toán",
+        "unpaid": "Chưa thanh toán",
+        "markPaid": "Xác nhận thanh toán",
+        "confirm": "Xác nhận",
+        "confirmPaid": "Bạn có chắc muốn đánh dấu đã thanh toán?",
+        "paymentDate": "Ngày thanh toán",
+        "amount": "Số tiền",
+        "note": "Ghi chú",
+        "phase": "Đợt",
+        "paymentProgress": "Tiến độ thanh toán",
+        "overdue": "Quá hạn"
+    },
+    "projectType": {
+        "createTitle": "Tạo loại dự án",
+        "editTitle": "Chỉnh sửa loại dự án",
+        "code": "Mã",
+        "costRate": "Tỷ lệ chi phí (%)",
+        "profitRate": "Tỷ lệ lợi nhuận (%)",
+        marginRate: "Tỷ lệ biên lợi nhuận (%)",
+        feedbackRate: "Tỷ lệ phản hồi (%)",
+        "codeRequired": "Vui lòng nhập mã",
+        "costRateRequired": "Vui lòng nhập tỷ lệ chi phí",
+        "profitRateRequired": "Vui lòng nhập tỷ lệ lợi nhuận",
+        "marginRateRequired": "Vui lòng nhập tỷ lệ margin",
+        "feedbackRateRequired": "Vui lòng nhập tỷ lệ feedback",
+
+        "rateInvalid": "Giá trị phải từ 0 đến 100"
     }
 
 };

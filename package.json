@@ -25,6 +25,7 @@
     "babel-plugin-module-resolver": "^5.0.2",
     "dayjs": "^1.11.19",
     "events": "^3.3.0",
+    "expo-haptics": "^55.0.8",
     "i": "^0.3.7",
     "i18next": "^25.8.3",
     "npm": "^11.11.0",

@@ -7,13 +7,15 @@ import { DrawerParamList } from "~/navigation/MainNavigator";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { DrawIcon } from "~/assets/icons";
+import { useTheme } from "~/context/ThemeContext";
 const TYPING_SPEED = 45;
 const HOLD_DURATION = 1800;
 
 export default function WeatherHeader() {
 
     const { weather } = useWeather("Hanoi");
-
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
     const greeting = getGreetingByTime();
 
     const messages = [
@@ -62,7 +64,13 @@ export default function WeatherHeader() {
                     )}
                     <Text style={styles.subText}>{typedText}</Text>
                 </View>
-                <DrawIcon onPress={() => navigationDraw.openDrawer()} width={28} height={28} />
+                {/* <DrawIcon onPress={() => navigationDraw.openDrawer()} width={28} height={28} /> */}
+                <Ionicons
+                    name="menu"
+                    size={28}
+                    color={isDark ? "#fff" : "#111"}
+                    onPress={() => navigationDraw.openDrawer()}
+                />
             </View>
 
             <View style={styles.divider}></View>

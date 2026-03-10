@@ -19,6 +19,7 @@ import { useAppColors } from '~/hooks/useAppColors';
 import DrawerNavigator from './DrawerNavigator';
 import ActiveSessionsScreen from '~/screens/security/ActiveSessionsScreen';
 import ProjectDetailScreen from '~/screens/project-detail/ProjectDetail';
+import ProjectTypeScreen from '~/screens/project-type/ProjectTypeScreen';
 
 export type MainParamList = {
     // MainTab: NavigatorScreenParams<BottomTabParamList>;
@@ -36,6 +37,7 @@ export type MainParamList = {
     ActiveSessions: undefined;
     ProjectDetail: { projectId: number };
     PaymentSchedule: { projectId: number };
+    ProjectType: undefined;
 
 
 };
@@ -83,6 +85,8 @@ export default function MainStack() {
             <Stack.Screen name="Language" options={{ title: t('tab.language') }} component={LanguageScreen} />
             <Stack.Screen name="ActiveSessions" options={{ title: t('security.activeSessions') }} component={ActiveSessionsScreen} />
             <Stack.Screen name="ProjectDetail" options={{ title: t('project.detail') }} component={ProjectDetailScreen} />
+            <Stack.Screen name="ProjectType" options={{ title: t('project.type') }} component={ProjectTypeScreen} />
+
         </Stack.Navigator>
     );
 }

@@ -11,23 +11,24 @@ import { BaseContent } from '~/components/base-screen/BaseContent';
 const OverviewTab = () => {
     const { t } = useTranslation();
     const colors = useAppColors();
-    const project = useProject();
+    const { project } = useProject();
+    // const calculateTimeProgress = () => {
+    //     if (!project?.startDate || !project?.endDate) return 0;
 
-    const calculateTimeProgress = () => {
-        if (!project?.startDate || !project?.endDate) return 0;
+    //     const now = new Date().getTime();
+    //     const start = new Date(project.startDate).getTime();
+    //     const end = new Date(project.endDate).getTime();
 
-        const now = new Date().getTime();
-        const start = new Date(project.startDate).getTime();
-        const end = new Date(project.endDate).getTime();
+    //     if (end <= start) return 0;
 
-        if (end <= start) return 0;
-
-        const percent = ((now - start) / (end - start)) * 100;
-        return Math.min(Math.max(percent, 0), 100);
-    };
-    const timeProgress = calculateTimeProgress();
+    //     const percent = ((now - start) / (end - start)) * 100;
+    //     return Math.min(Math.max(percent, 0), 100);
+    // };
+    // const timeProgress = calculateTimeProgress();
 
     if (!project) return null;
+
+
 
     return (
         <BaseContent>
@@ -45,6 +46,11 @@ const OverviewTab = () => {
                             {/* {project.cost} */}
                             {t("project.cost")}:{" "}
                             {formatCurrency(project.cost)}
+                        </Text>
+                        <Text style={styles.heroDate}>
+                            {/* {project.cost} */}
+                            {t("project.slotPayment")}:{" "}
+                            {formatCurrency(project.slotPayment)}
                         </Text>
                     </View>
 
@@ -69,7 +75,7 @@ const OverviewTab = () => {
                         </Text>
                     </View>
                 </View>
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
+                {/* <View style={[styles.card, { backgroundColor: colors.card }]}>
                     <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
                         {t('project.timeline')}
                     </Text>
@@ -84,19 +90,19 @@ const OverviewTab = () => {
                             {t('project.slotPayment')}: {project?.slotPayment}
                         </Text>
                     </View>
-                </View>
+                </View> */}
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                     <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                        {t('project.type')}
+                        {t('project.type')} :  {project?.projectType?.code}
                     </Text>
 
                     <View style={styles.grid}>
-                        <View style={styles.gridItem}>
+                        {/* <View style={styles.gridItem}>
                             <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.code')}</Text>
                             <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
                                 {project?.projectType?.code}
                             </Text>
-                        </View>
+                        </View> */}
 
                         <View style={styles.gridItem}>
                             <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.costRate')}</Text>
@@ -116,6 +122,13 @@ const OverviewTab = () => {
                             <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.marginRate')}</Text>
                             <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
                                 {project?.projectType?.marginRate} %
+                            </Text>
+                        </View>
+
+                        <View style={styles.gridItem}>
+                            <Text style={[styles.gridLabel, { color: colors.textSecondary }]}>{t('project.feedbackRate')}</Text>
+                            <Text style={[styles.gridValue, { color: colors.textPrimary }]}>
+                                {project?.projectType?.feedbackRate} %
                             </Text>
                         </View>
                     </View>
